@@ -18,10 +18,17 @@ module AlpacaMarkets
   function auth()
     api_key = get(ENV, "ALPACA_KEY", "")
     api_secret = get(ENV, "ALPACA_SECRET", "")
-    if api_key == "" || api_secret == ""
-      @warn "API details not found, authenticate manuallly with auth()"
+ 
+    if api_key == "" 
+      @warn "API key details not found, authenticate manuallly with auth()"
       return
     end
+
+    if api_secret == ""
+      @warn "API secret details not found, authenticate manuallly with auth()"
+      return
+    end
+
     auth(api_key, api_secret)
     return
   end
