@@ -4,10 +4,10 @@ function get_stock_data(f, symbol, startTime, endTime; feed=nothing)
   data, token = f(symbol; startTime = startTime, endTime = endTime, feed = feed)
 
   res = [data]
-  while !isnothing(token)
+  while !(isnothing(token) || isempty(token))
     newdata, token = f(symbol; startTime = startTime, endTime = endTime, feed = feed, page_token = token)
     append!(res, [newdata])
-    sleep(0.301)
+    sleep(SLEEP_TIME[])
   end
   vcat(res...)
 end
