@@ -7,14 +7,16 @@ Get historical aggregated price data for a cryptocurrency.
 
 # Examples 
 ```julia-repl
-julia> crypto_bars("BTCUSD", "5min")
+julia> crypto_bars("BTC/USD", "5min")
 ```
 
 """
-function crypto_bars(symbol::String, timeframe::String; exchanges=nothing, startTime=nothing, limit=nothing, page_token=nothing)
-  url = join([BASE_CRYPTO_URL, symbol, "bars"], "/")
+function crypto_bars(symbol, timeframe::String; exchanges=nothing, startTime=nothing, limit=nothing, page_token=nothing)
+  validate_ccy(symbol)
+  url = join([BASE_CRYPTO_URL, "bars"], "/")
 
   params = Dict(
+    "symbols" => symbol,
     "timeframe" => timeframe,
     "exchanges" => exchanges,
     "start" => startTime, 
@@ -27,7 +29,6 @@ function crypto_bars(symbol::String, timeframe::String; exchanges=nothing, start
   url = url * "?" * paramsurl
   res = HTTP.get(url, headers = HEADERS[])
   resdict = JSON.parse(String(res.body))
-  
   parse_response(resdict, "bars")
 end
 export crypto_bars

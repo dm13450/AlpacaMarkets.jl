@@ -25,9 +25,24 @@ function parse_response(res, type)
   if isnothing(res[type])
     return (DataFrame(symbol = res["symbol"]), "")
   end
-
-  df = vcat(DataFrame.(res[type])...)
-  df[!, "symbol"] .= res["symbol"]
-  #df[!, "timestamp"] = DateTime.(first.(df[!, "t"], 23))
+  dfAll = Array{DataFrame}(undef, length(res[type]))
+  for (i, (symbol, data)) in enumerate(res[type])
+    df = vcat(DataFrame.(data)...)
+    df[!, "symbol"] .= symbol
+    #df[!, "timestamp"] = DateTime.(first.(df[!, "t"], 23))
+    dfAll[i] = df
+  end
+  df = vcat(dfAll...)
   (df, res["next_page_token"])
+end
+
+function validate_ccy(symbol::String)
+  if !occursin("/", symbol)
+    @info "API changed - BTCUSD needs to be BTC/USD now"
+    return symbol[1:3] * "/" * symbol[4:end]
+  end
+end
+
+function validate_ccy(symbol::Array{String})
+  validate_ccy.(symbol)
 end

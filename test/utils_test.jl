@@ -22,4 +22,10 @@
     end
   end
 
+  @testset "Validate Ccy" begin
+
+    @test AlpacaMarkets.validate_ccy("BTCUSD") == "BTC/USD"
+  end
+
+
 end

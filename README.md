@@ -18,7 +18,7 @@ using AlpacaMarkets
 AlpacaMarkets.auth(KEY, SECRET)
 ```
 
-Rather than setting it manually each time I recommend you add it to your `.julia/startup.jl`. 
+Rather than setting it manually each time I recommend you add it to your `.julia/startup.jl` or '.julia/config/startup.jl'
 
 ```
 ENV["ALPACA_KEY"] = KEY
@@ -51,6 +51,6 @@ So you can pull some historical data as and when needed.
 
 ## Examples
 
-* Equity Market Data
+* Equity Market Data - https://dm13450.github.io/2022/03/22/AlpacaMarkets.jl-More-Free-Data.html
 * Crypto Market Data
 * News Data

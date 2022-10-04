@@ -1,5 +1,5 @@
 
-const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta1/crypto"
+const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta2/crypto"
 
 
 function crypto_trades(symbol; exchanges=nothing, startTime=nothing, endTime=nothing, limit=nothing, page_token=nothing)
@@ -14,9 +14,10 @@ export crypto_quotes
 
 
 function get_crypto_data(type, symbol; exchanges=nothing, startTime=nothing, endTime=nothing, limit=nothing, page_token=nothing)
-  url = join([BASE_CRYPTO_URL, symbol, type], "/")
+  url = join([BASE_CRYPTO_URL, type], "/")
 
   params = Dict(
+    "symbols" => symbol,
     "start" => startTime,
     "end" => endTime,
     "feed" => exchanges,
