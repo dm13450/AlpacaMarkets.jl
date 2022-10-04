@@ -1,4 +1,14 @@
+"""
+  get_crypto_trades
 
+Get historical trades for a cryptocurrency. 
+
+# Examples 
+```julia-repl
+julia> get_crypto_trades("BTC/USD", now() - Hour(1), now())
+```
+
+"""
 function get_crypto_trades(ccy, startTime, endTime; exchanges=nothing)
 
   trades, token = crypto_trades(ccy; startTime = startTime, endTime = endTime, exchanges = exchanges)
