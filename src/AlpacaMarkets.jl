@@ -45,5 +45,6 @@ module AlpacaMarkets
   include("stock_exchanges.jl")
   include("news.jl")
   include("stock_bars.jl")
+  include("trading.jl")
 
 end # module
