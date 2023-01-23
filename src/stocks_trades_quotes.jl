@@ -43,8 +43,6 @@ function _stock_data(type, symbol; startTime=nothing, endTime=nothing,
     url = url * "?" * paramsuri
   end
 
-  res = HTTP.get(url, headers = HEADERS[])
-  resdict = JSON.parse(String(res.body))
-  
-  parse_response(resdict, type)
+  res = HTTP.get(url, headers = HEADERS[]).body |> String |> JSON3.read
+  parse_response(res, type)
 end

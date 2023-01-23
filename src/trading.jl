@@ -21,7 +21,7 @@ function submit_order(symbol, side, type, time_in_force, qty=nothing, notional=n
         "time_in_force" => time_in_force
     )
     filter!(p -> !isnothing(p.second), params)
-    HTTP.post(url; body=json(params), headers = HEADERS[]).body |> String |> JSON.parse
+    HTTP.post(url; body=JSON3.write(params), headers = HEADERS[]).body |> String |> JSON3.read
 end
 
 export submit_order

@@ -20,6 +20,5 @@ function news(symbols::Array{String}, startTime=nothing, endTime=nothing, limit=
     url = NEWS_URL * "?" * paramsuri
   end
 
-  req = HTTP.get(url, headers = HEADERS[])
-  JSON.parse(String(req.body))
+  HTTP.get(url, headers = HEADERS[]).body |> String |> JSON3.read
 end

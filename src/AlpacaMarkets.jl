@@ -1,5 +1,5 @@
 module AlpacaMarkets
-  using HTTP, JSON
+  using HTTP, JSON3
   using DataFrames
   using Dates
 
