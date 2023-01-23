@@ -35,8 +35,7 @@ function stock_bars(symbol::String, timeframe::String;
   paramsurl = params_uri(params)
 
   url = url * "?" * paramsurl
-  res = HTTP.get(url, headers = HEADERS[])
-  resdict = JSON.parse(String(res.body))
-  parse_response(resdict, "bars")
+  res = HTTP.get(url, headers = HEADERS[]).body |> String |> JSON3.read
+  parse_response(res, "bars")
 end
 export stock_bars

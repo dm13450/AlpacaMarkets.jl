@@ -1,5 +1,5 @@
 module AlpacaMarkets
-  using HTTP, JSON
+  using HTTP, JSON3
   using DataFrames
   using Dates
 
@@ -45,5 +45,6 @@ module AlpacaMarkets
   include("stock_exchanges.jl")
   include("news.jl")
   include("stock_bars.jl")
+  include("trading.jl")
 
 end # module
