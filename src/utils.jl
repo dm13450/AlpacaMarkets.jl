@@ -36,6 +36,20 @@ function parse_response(res, type)
   (df, res["next_page_token"])
 end
 
+function parse_latest_response(res, type)
+  if isnothing(res[type])
+    return (DataFrame(symbol = res["symbol"]), "")
+  end
+  dfAll = Array{DataFrame}(undef, length(res[type]))
+  for (i, (symbol, data)) in enumerate(res[type])
+    df = DataFrame(data)
+    df[!, "symbol"] .= symbol
+    dfAll[i] = df
+  end
+  df = vcat(dfAll...)
+  df
+end
+
 function validate_ccy(symbol::String)
   if !occursin("/", symbol)
     @info "API changed - BTCUSD needs to be BTC/USD now"
