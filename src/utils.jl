@@ -1,5 +1,5 @@
 function format_value(x::DateTime)
-  Dates.format(x, dateformat"yyyy-mm-ddTHH:MM:SS\\Z")
+  Dates.format(x, dateformat"yyyy-mm-ddTHH:MM:SS\Z")
 end
 function format_value(x::Array{String})
   join(x, ",")
