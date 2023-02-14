@@ -1,20 +1,20 @@
 """
   stock_bars
 
-Get historical aggregated price data for a cryptocurrency. 
+Get historical aggregated price data for a cryptocurrency.
 
-`timeframe::String`: 1Min-59min, 1Hour-23Hour, 1Day-31Day
+`timeframe::AbstractString`: 1Min-59min, 1Hour-23Hour, 1Day-31Day
 
-# Examples 
+# Examples
 ```julia-repl
 julia> stock_bars("AAPL", "5min")
 ```
 
 """
-function stock_bars(symbol::String, timeframe::String; 
-                    startTime=nothing, endTime=nothing, 
+function stock_bars(symbol::AbstractString, timeframe::AbstractString;
+                    startTime=nothing, endTime=nothing,
                     limit=nothing, page_token=nothing,
-                    asof = nothing, adjustment = nothing, 
+                    asof = nothing, adjustment = nothing,
                     feed = nothing, currency = nothing)
 
   url = join([BASE_STOCK_URL, "bars"], "/")
@@ -22,14 +22,14 @@ function stock_bars(symbol::String, timeframe::String;
   params = Dict(
     "symbols" => symbol,
     "timeframe" => timeframe,
-    "start" => startTime, 
+    "start" => startTime,
     "end" => endTime,
-    "limit" => limit, 
+    "limit" => limit,
     "page_token" => page_token,
     "asof" => asof,
     "adjustment" => adjustment,
     "feed" => feed,
-    "currency" => currency    
+    "currency" => currency
   )
 
   paramsurl = params_uri(params)

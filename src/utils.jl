@@ -50,7 +50,7 @@ function parse_latest_response(res, type)
   df
 end
 
-function validate_ccy(symbol::String)
+function validate_ccy(symbol::AbstractString)
   if !occursin("/", symbol)
     @info "API changed - BTCUSD needs to be BTC/USD now"
     return symbol[1:3] * "/" * symbol[4:end]
@@ -58,5 +58,9 @@ function validate_ccy(symbol::String)
 end
 
 function validate_ccy(symbol::Array{String})
+  validate_ccy.(symbol)
+end
+
+function validate_ccy(symbol::Array{AbstractString})
   validate_ccy.(symbol)
 end
