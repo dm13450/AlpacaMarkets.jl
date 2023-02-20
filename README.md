@@ -4,16 +4,16 @@ A work in progress Julia wrapper for the Alpaca Markets API.
 
 ## Overview
 
-Access Alpaca Markets market data API to retrieve stock and crypto market data. 
+Access Alpaca Markets market data API to retrieve stock and crypto market data.
 
 ## Installation and Setup
 
-AlpacaMarkets.jl is in the General Registry so you can simply install locally using Pkg. 
+AlpacaMarkets.jl is in the General Registry so you can simply install locally using Pkg.
 
-You need to sign up to AlpacaMarkets to obtain your API keys. 
+You need to sign up to AlpacaMarkets to obtain your API keys.
 Once you've obtained the key and secret you can authenticate manually with
 
-```julia 
+```julia
 using AlpacaMarkets
 AlpacaMarkets.auth(KEY, SECRET)
 ```
@@ -29,9 +29,10 @@ This is automatically be picked up by AlpacaMarkets.jl each time you start Julia
 
 ## Available Functions
 
-All the historical market data API functions are available: 
+All the historical market data API functions are available:
 
 * `stock_bars`, `stock_quotes` and `stock_trades`
+* `stock_quotes_latest` and `stock_trades_latest`
 * `crypto_bars`, `crypto_quotes` and `crypto_trades`
 
 Plus the interface to their news API
@@ -45,7 +46,7 @@ Plus I've added helper functions to obtain data between two periods:
 
 So you can pull some historical data as and when needed.
 
-## To Do 
+## To Do
 
 * Integrate Trading API
 
