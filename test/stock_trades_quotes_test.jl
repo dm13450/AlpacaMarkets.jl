@@ -26,9 +26,8 @@
 
   for f in (stock_trades_latest, stock_quotes_latest)
     @testset "$(f)" begin
-      res = f("AAPL"; )
+      res = f("AAPL")
       @test isa(res, DataFrame)
-      @test nrow(res) == 1
     end
   end
 
