@@ -1,3 +1,5 @@
+const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta2/crypto"
+
 """
   crypto_bars
 
@@ -11,7 +13,7 @@ julia> crypto_bars("BTC/USD", "5min")
 ```
 
 """
-function crypto_bars(symbol, timeframe::String; exchanges=nothing, startTime=nothing, limit=nothing, page_token=nothing)
+function crypto_bars(symbol::String, timeframe::String; exchanges=nothing, startTime=nothing, limit=nothing, page_token=nothing)
   validate_ccy(symbol)
   url = join([BASE_CRYPTO_URL, "bars"], "/")
 
