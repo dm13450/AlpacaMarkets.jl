@@ -2,6 +2,7 @@
 @testset "Stock Trades Quotes" begin
 
   for f in (stock_trades, stock_quotes)
+    # tests passing on local machine
     @testset "$(f)" begin
       res = f("AAPL"; startTime = Date("2022-11-03"), limit = 2)
       @test length(res) == 2

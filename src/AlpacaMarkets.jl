@@ -14,8 +14,7 @@ module AlpacaMarkets
 
   function auth(api_key, api_secret)
     HEADERS[] = ["APCA-API-KEY-ID" => api_key,
-                 "APCA-API-SECRET-KEY" => api_secret
-                ]
+                 "APCA-API-SECRET-KEY" => api_secret]
   end
 
   function auth()

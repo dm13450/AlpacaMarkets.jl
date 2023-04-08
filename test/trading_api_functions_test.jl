@@ -6,5 +6,4 @@
         @test size(res,2) == 35
         @test isa(res, DataFrame)
     end
-
 end
