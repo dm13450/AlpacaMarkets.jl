@@ -48,7 +48,6 @@ function account()::DataFrame
     return resdf
 end
 
-
 """
 
 function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after::Any=nothing, until::Any=nothing, direction::Any=nothing, nested::Any=nothing, side::Any=nothing)::DataFrame
@@ -97,3 +96,130 @@ function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after
     print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
     return resdf
 end
+
+
+
+"""
+
+Place an order
+
+function place_order(symbol::String; qty::Any=nothing, notional::Any=nothing, side::Any=nothing, type::Any=nothing, time_in_force::Any=nothing, limit_price::Any=nothing, stop_price::Any=nothing,
+    trail_price::Any=nothing, trail_percent::Any=nothing, extended_hours::Any=nothing, client_order_id::Any=nothing, order_class::Any=nothing, take_profit::Any=nothing, stop_loss::Any=nothing)
+
+
+Body Parameters
+Attribute 	        Type 	                    Requirement 	    Description
+symbol 	            string 	                    Required            symbol, asset ID, or currency pair to identify the asset to trade
+qty 	            string<number> 	            Required            number of shares to trade. Can be fractionable for only market and day order types.
+notional 	        string<number> 	            Required            dollar amount to trade. Cannot work with qty. Can only work for market order types and day for time in force.
+side 	            string 	                    Required            buy or sell
+type 	            string 	                    Required            market, limit, stop, stop_limit, or trailing_stop
+time_in_force 	    string 	                    Required            Please see Understand Orders for more info on what values are possible for what kind of orders. :: day, gtc, opg, cls, ioc, fok
+limit_price 	    string<number> 	            Required            required if type is limit or stop_limit
+stop_price 	        string<number> 	            Required            required if type is stop or stop_limit
+trail_price 	    string<number> 	            Required            this or trail_percent is required if type is trailing_stop
+trail_percent 	    string<number> 	            Required            this or trail_price is required if type is trailing_stop
+extended_hours 	    boolean 	                Optional            (default) false. If true, order will be eligible to execute in premarket/afterhours. Only works with type limit and time_in_force day.
+client_order_id 	string (<= 48 characters) 	Optional            A unique identifier for the order. Automatically generated if not sent.
+order_class 	    string 	                    Optional            simple, bracket, oco or oto. The empty string ("") is synonym for simple. For details of non-simple order classes, please see Bracket Order Overview
+take_profit 	    object 	                    Optional            Additional parameters for take-profit leg of advanced orders
+stop_loss 	        object 	                    Optional            Additional parameters for stop-loss leg of advanced orders
+
+# example 
+place_order("AAPL"; qty="1", notional=nothing, side="buy", type="limit", time_in_force="gtc", limit_price="150.56", stop_price=nothing,
+    trail_price=nothing, trail_percent=nothing, extended_hours=nothing, client_order_id=nothing, order_class=nothing, take_profit=nothing, stop_loss=nothing)
+
+
+place_order("AAPL"; qty="1", notional=nothing, side="sell", type="limit", time_in_force="day", limit_price="155.56", stop_price=nothing,
+    trail_price=nothing, trail_percent=nothing, extended_hours=nothing, client_order_id=nothing, order_class=nothing, take_profit=nothing, stop_loss=nothing)
+"""
+function place_order(symbol::String; qty::Any=nothing, notional::Any=nothing, side::Any=nothing, type::Any=nothing, time_in_force::Any=nothing, limit_price::Any=nothing, stop_price::Any=nothing,
+    trail_price::Any=nothing, trail_percent::Any=nothing, extended_hours::Any=nothing, client_order_id::Any=nothing, order_class::Any=nothing, take_profit::Any=nothing, stop_loss::Any=nothing)
+
+    # control the required input parameters
+    if !isnothing(qty) && !isnothing(notional)
+        @assert isnothing(qty) && isnothing(notional) || !isnothing(qty) && isnothing(notional) "Either qty or notational permitted - can not state both"
+    end
+
+    if type == "market" && (!isnothing(limit_price) || !isnothing(stop_price))
+        @assert isnothing(limit_price) && isnothing(stop_price) "market orders require no stop or limit price"
+    end
+
+    if type == "limit" || type == "stop_limit" && isnothing(limit_price) 
+        @assert !isnothing(limit_price)  "limit_price required if type is limit or stop_limit"
+    end
+
+    if (type == "stop" || type == "stop_limit") && isnothing(stop_price) 
+        @assert !isnothing(stop_price)  "stop_price required if type is stop or stop_limit"
+    end
+
+    if type == "trailing_stop" && (isnothing(trail_price) || isnothing(trail_percent))
+        @assert type == "trailing_stop" && !isnothing(trail_price) || !isnothing(trail_percent)  "trail_price or trail_percent required if type is trailing_stop"
+    end
+
+    if type == "trailing_stop"  && !isnothing(trail_price) && !isnothing(trail_percent)
+        @assert isnothing(trail_price) && isnothing(trail_percent) || !isnothing(trail_price) && isnothing(trail_percent) "Either trail_price or trail_percent permitted - can not state both"
+    end
+
+    if isnothing(symbol)
+        @assert !isnothing(symbol) "symbol is required"
+    end
+
+    if isnothing(side)
+        @assert !isnothing(side) "side is required"
+    end
+
+    if isnothing(type)
+        @assert !isnothing(type) "type is required"
+    end
+
+    if isnothing(time_in_force)
+        @assert !isnothing(time_in_force) "time_in_force is required"
+    end
+
+    if !isnothing(side)
+        # buy or sell
+        @assert side == "buy" || side == "sell" "side available arguments :: buy or sell"
+    end
+
+    if !isnothing(type)
+        # market, limit, stop, stop_limit, or trailing_stop
+        @assert type == "market" || type == "limit" || type == "stop" || type == "stop_limit" || type == "trailing_stop" "type available arguments :: market, limit, stop, stop_limit, or trailing_stop"
+    end
+
+    if !isnothing(time_in_force)
+        # day, gtc, opg, cls, ioc, fok
+        @assert time_in_force == "day" || time_in_force == "gtc" || time_in_force == "opg" || time_in_force == "cls" || time_in_force == "ioc" || time_in_force == "fok" "time_in_force available arguments :: day, gtc, opg, cls, ioc, fok"
+    end
+
+    # url 
+    url = join([TRADING_API_URL, "orders?"], "/")
+
+    # place the function variables inside a Dict()
+    params = Dict(
+    "symbol" => symbol,
+    "qty" => qty,
+    "notional" => notional, 
+    "side" => side,
+    "type" => type, 
+    "time_in_force" => time_in_force,
+    "limit_price" => limit_price,
+    "stop_price" => stop_price,
+    "trail_price" => trail_price,
+    "trail_percent" => trail_percent,
+    "extended_hours" => extended_hours,
+    "client_order_id" => client_order_id,
+    "order_class" => order_class,
+    "take_profit" => take_profit,
+    "stop_loss" => stop_loss
+  )
+
+  # build urls
+  paramsurl = params_uri(params)
+  url = join([url, paramsurl], "/")
+  # send order
+  HTTP.post(url, body=json(params), headers = HEADERS[])
+
+end
+
+export place_order
