@@ -9,4 +9,5 @@ using DataFrames, Dates
   include("crypto_trades_quotes_test.jl")
   include("crypto_bars_test.jl")
   include("stock_bars_test.jl")
+  include("trading_api_functions_test.jl")
 end
