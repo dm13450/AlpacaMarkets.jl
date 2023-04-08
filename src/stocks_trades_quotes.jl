@@ -54,7 +54,7 @@ end
 export stock_quotes
 
 
-# stock trades and quotes latest
+# stock trades,quotes latest
 
 function _stock_data_latest(type, symbol; feed = nothing, currency=nothing)
   url = join([BASE_STOCK_URL, type, "latest"], "/")
@@ -81,6 +81,7 @@ function stock_trades_latest(symbol; feed = nothing, currency=nothing)
   _stock_data_latest("trades", symbol; feed = feed, currency=currency)
 
 end
+
 export stock_trades_latest
 
 function stock_quotes_latest(symbol; feed = nothing, currency=nothing)
@@ -88,4 +89,5 @@ function stock_quotes_latest(symbol; feed = nothing, currency=nothing)
   _stock_data_latest("quotes", symbol; feed = feed, currency=currency)
 
 end
+
 export stock_quotes_latest
