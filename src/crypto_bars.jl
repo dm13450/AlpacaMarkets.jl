@@ -1,5 +1,3 @@
-const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta2/crypto"
-
 """
   crypto_bars
 
@@ -33,4 +31,4 @@ function crypto_bars(symbol::String, timeframe::String; exchanges=nothing, start
   resdict = JSON.parse(String(res.body))
   parse_response(resdict, "bars")
 end
-export crypto_bars
+#export crypto_bars

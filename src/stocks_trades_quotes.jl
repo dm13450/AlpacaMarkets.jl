@@ -1,7 +1,4 @@
-const BASE_STOCK_URL = "https://data.alpaca.markets/v2/stocks"
-
 # stock trades and quotes
-
 function _stock_data(type, symbol; startTime=nothing, endTime=nothing,
                           limit=nothing, asof = nothing, feed = nothing,
                           page_token=nothing, currency=nothing)
@@ -41,7 +38,7 @@ function stock_trades(symbol; startTime=nothing, endTime=nothing,
                         limit=limit, asof = asof, feed = feed,
                         page_token=page_token, currency = currency)
 end
-export stock_trades
+#export stock_trades
 
 function stock_quotes(symbol; startTime=nothing, endTime=nothing,
                               limit=nothing, asof = nothing, feed = nothing,
@@ -51,7 +48,7 @@ function stock_quotes(symbol; startTime=nothing, endTime=nothing,
                         limit=limit, asof = asof, feed = feed,
                         page_token=page_token, currency=currency)
 end
-export stock_quotes
+#export stock_quotes
 
 
 # stock trades,quotes latest
@@ -82,7 +79,7 @@ function stock_trades_latest(symbol; feed = nothing, currency=nothing)
 
 end
 
-export stock_trades_latest
+#export stock_trades_latest
 
 function stock_quotes_latest(symbol; feed = nothing, currency=nothing)
 
@@ -90,4 +87,4 @@ function stock_quotes_latest(symbol; feed = nothing, currency=nothing)
 
 end
 
-export stock_quotes_latest
+#export stock_quotes_latest

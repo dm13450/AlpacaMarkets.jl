@@ -1,7 +1,9 @@
 using AlpacaMarkets
 using Test
-
-using DataFrames, Dates
+using HTTP
+using JSON
+using DataFrames
+using Dates
 
 @testset "AlpacaMarkets" begin
   include("utils_test.jl")

@@ -1,10 +1,13 @@
 function format_value(x::DateTime)
   Dates.format(x, dateformat"yyyy-mm-ddTHH:MM:SSZ")
 end
+
 function format_value(x::Array{String})
   join(x, ",")
 end
+
 format_value(x) = x
+
 
 function params_uri(params::Dict)
   uri = ""
@@ -14,14 +17,15 @@ function params_uri(params::Dict)
       uri *= "$(key)=$(value)&"
     end
   end
+
   if endswith(uri, "&")
     uri = chop(uri)
   end
   uri
 end
 
-function parse_response(res, type)
 
+function parse_response(res, type)
   if isnothing(res[type])
     return (DataFrame(symbol = res["symbol"]), "")
   end
@@ -35,6 +39,7 @@ function parse_response(res, type)
   df = vcat(dfAll...)
   (df, res["next_page_token"])
 end
+
 
 function parse_latest_response(res, type)
   if isnothing(res[type])
@@ -50,12 +55,14 @@ function parse_latest_response(res, type)
   df
 end
 
+
 function validate_ccy(symbol::String)
   if !occursin("/", symbol)
     @info "API changed - BTCUSD needs to be BTC/USD now"
     return symbol[1:3] * "/" * symbol[4:end]
   end
 end
+
 
 function validate_ccy(symbol::Array{String})
   validate_ccy.(symbol)

@@ -2,7 +2,7 @@
 
   @testset "Single Ccy" begin
     # tests passing on local machine
-    res = crypto_bars(["BTC/USD"], "1Hour")
+    res = AlpacaMarkets.crypto_bars("BTC/USD", "1Hour")
 
     @test length(res) == 2
     @test isa(res[1], DataFrame)

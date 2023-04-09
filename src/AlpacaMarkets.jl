@@ -3,6 +3,10 @@ module AlpacaMarkets
   using DataFrames
   using Dates
 
+  const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta2/crypto"
+  const NEWS_URL = "https://data.alpaca.markets//v1beta1/news"
+  const BASE_STOCK_URL = "https://data.alpaca.markets/v2/stocks"
+
   const HEADERS = Ref{Vector{Pair{String, String}}}()
   const SLEEP_TIME = Ref{Float64}()
 

@@ -48,6 +48,7 @@ function account()::DataFrame
     return resdf
 end
 
+
 """
 
 function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after::Any=nothing, until::Any=nothing, direction::Any=nothing, nested::Any=nothing, side::Any=nothing)::DataFrame
@@ -96,7 +97,6 @@ function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after
     print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
     return resdf
 end
-
 
 
 """
@@ -222,4 +222,4 @@ function place_order(symbol::String; qty::Any=nothing, notional::Any=nothing, si
 
 end
 
-export place_order
+#export place_order
