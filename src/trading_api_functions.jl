@@ -22,9 +22,11 @@ end
 
 """
 
-function account()::DataFrame
+Get the account
+GET /v2/account
+Returns the account associated with the API key
 
-Returns a DataFrame with trading account details
+function account()::DataFrame
 
 Trading Account
 The account API serves important information related to an account, including account status, funds available for trade, funds available for withdrawal, and various flags relevant to an account’s ability to trade. 
@@ -69,14 +71,14 @@ side 	    string 	    Optional        Filters down to orders that have a matchin
 symbols 	string 	    Optional        A comma-separated list of symbols to filter by (ex. “AAPL,TSLA,MSFT”). A currency pair is required for crypto orders (ex. “BTCUSD,BCHUSD,LTCUSD,ETCUSD”).
 
 #  examples
-orders_df = get_orders(nothing; status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")::DataFrame
-orders_df = get_orders("TSLA,AAPL"; status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side=nothing)::DataFrame
+orders_df = get_orders(nothing; status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")
+orders_df = get_orders("TSLA,AAPL"; status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side=nothing)
 
 """
 function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after::Any=nothing, until::Any=nothing, direction::Any=nothing, nested::Any=nothing, side::Any=nothing)::DataFrame
 
     # end point url for orders at the live or paper account
-    url = join([TRADING_API_URL, "orders?"], "/")
+    url = join([TRADING_API_URL, "orders"], "/")
 
     params = Dict(
     "status" => status,
@@ -89,8 +91,16 @@ function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after
     "symbols" => symbols
     )
 
-    paramsurl = params_uri(params)
-    url = join([url, paramsurl], "/")
+    # order_id is optional
+    # pull all orders or filter per the attribute
+    if 1 == isnothing(status) && 1 == isnothing(limit) && 1 == isnothing(after) && 1 == isnothing(until) && 1 == isnothing(direction) && 1 == isnothing(nested) && 1 == isnothing(side) && 1 == isnothing(symbols)
+        # end point url for orders at the live or paper account
+        url = join([TRADING_API_URL, "orders"], "/")
+    else
+        paramsurl = params_question_mark_sep(params)
+        url = join([url, paramsurl], "?")
+    end
+
     res = HTTP.get(url, headers = HEADERS[])
     resdict = JSON.parse(String(res.body))
     resdf = DataFrame(resdict)
@@ -98,6 +108,62 @@ function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after
     return resdf
 end
 
+
+"""
+
+function replace_an_order(symbols::Any; status::Any=nothing, limit::Any=nothing, after::Any=nothing, until::Any=nothing, direction::Any=nothing, nested::Any=nothing, side::Any=nothing)::DataFrame
+
+Replace an order
+PATCH /v2/orders/{order_id}
+Replaces a single order with updated parameters. Each parameter overrides the corresponding attribute of the existing order. The other attributes remain the same as the existing order.
+
+Path Parameters
+Attribute	Type	    Requirement	        Description
+order_id	string<uuid>	Optional        Order ID
+
+Body Parameters
+Attribute	        Type	                    Requirement	            Description
+qty	                string<int>	                Optional                number of shares to trade
+time_in_force	    string                      Optional                Please see Understand Orders for more info on what values are possible for what kind of orders.
+limit_price	        string<number>	            Optional                required if type is limit or stop_limit
+stop_price	        string<number>	            Optional                required if type is stop or stop_limit
+trail	            string<number>	            Optional                the new value of the trail_price or trail_percent value (works only for type=“trailing_stop”)
+client_order_id	    string (<= 48 characters)	Optional                A unique identifier for the order. Automatically generated if not sent.
+
+#  examples
+order_id_string = "1483d27e-f49b-4216-9d20-e78a0541a049"
+replace_an_order(order_id_string; qty="1",time_in_force="gtc")
+
+"""
+function replace_an_order(order_id::String; qty::Any=nothing, time_in_force::Any=nothing, limit_price::Any=nothing, stop_price::Any=nothing, trail::Any=nothing, client_order_id::Any=nothing)::DataFrame
+
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "orders"], "/")
+
+    params = Dict(
+    "qty" => qty,
+    "time_in_force" => time_in_force,
+    "limit_price" => limit_price, 
+    "stop_price" => stop_price,
+    "trail" => trail, 
+    "client_order_id" => client_order_id
+    )
+
+    # join order_id 
+    url = join([url, order_id], "/")
+    # build parameters into the url seperated by ?
+    paramsurl = params_question_mark_sep(params)
+    url = join([url, paramsurl], "?")
+    # send url and body
+    res = HTTP.patch(url, body=json(params), headers = HEADERS[])
+    resdict = JSON.parse(String(res.body))
+    # save response to dataframe
+    resdf = DataFrame(resdict)
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    return resdf
+end
+
+export replace_an_order
 
 """
 
@@ -259,6 +325,16 @@ function place_order(symbol::String; qty::Any=nothing, notional::Any=nothing, si
   # send order
   HTTP.post(url, body=json(params), headers = HEADERS[])
 
+#=
+# consider retaining response in a df
+res = HTTP.post(url, body=json(params), headers = HEADERS[])
+resdict = JSON.parse(String(res.body))
+print(resdict)
+post_response_df = DataFrame(resdict)
+print(DataFrame([[names(post_response_df)]; collect.(eachrow(post_response_df))], [:column; Symbol.(axes(post_response_df, 1))]))
+
+return post_response_df
+=#
 end
 
 #export place_order

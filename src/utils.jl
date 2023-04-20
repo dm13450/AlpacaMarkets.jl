@@ -25,6 +25,22 @@ function params_uri(params::Dict)
 end
 
 
+function params_question_mark_sep(params::Dict)
+  uri = ""
+  for (key, value) in params
+    if !isnothing(value)
+      value = format_value(value)
+      uri *= "$(key)=$(value)?"
+    end
+  end
+
+  if endswith(uri, "?")
+    uri = chop(uri)
+  end
+  uri
+end
+
+
 function parse_response(res, type)
   if isnothing(res[type])
     return (DataFrame(symbol = res["symbol"]), "")
