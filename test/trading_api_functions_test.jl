@@ -19,7 +19,7 @@
         sleep(2)
 
         # check order is active
-        orders_df = AlpacaMarkets.get_orders(nothing, status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")::DataFrame
+        orders_df = AlpacaMarkets.get_orders(nothing, status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")
 
         for i = 1:size(orders_df,1)
             if orders_df.symbol[i] == place_order_symbol && orders_df.side[i] == "buy"
@@ -103,6 +103,33 @@
             if orders_df.symbol[i] == place_order_symbol && orders_df.side[i] == "sell"
                 @test orders_df.symbol[i] == place_order_symbol
             end
+        end
+    end
+
+    @testset "place_order() - send buy limit order, query sent order with get_orders(), obtain the specific order with get_orders_by_order_id()" begin
+        # place order - limit
+        place_order_symbol = "TSLA"
+        AlpacaMarkets.place_order(place_order_symbol; qty="1", notional=nothing, side="buy", type="limit", time_in_force="gtc", limit_price="156.32", stop_price=nothing,
+        trail_price=nothing, trail_percent=nothing, extended_hours=nothing, client_order_id=nothing, order_class=nothing, take_profit=nothing, stop_loss=nothing)
+
+        # enforce small amount of lag let the order send 
+        sleep(2)
+
+        # check order is active
+        orders_df = AlpacaMarkets.get_orders(nothing, status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")::DataFrame
+
+        order_id = ""
+        for i = 1:size(orders_df,1)
+            if orders_df.symbol[i] == place_order_symbol && orders_df.side[i] == "buy"
+                @test orders_df.symbol[i] == place_order_symbol
+                order_id = orders_df.id[i]
+            end
+        end
+
+        # get the specific order id
+        orders_by_id_df = AlpacaMarkets.get_orders_by_order_id(order_id)
+        if orders_by_id_df.id[1] == order_id
+            @test orders_by_id_df.id[1] == order_id
         end
     end
 

@@ -65,7 +65,7 @@ after 	    timestamp 	Optional        The response will include only ones submit
 until 	    timestamp 	Optional        The response will include only ones submitted until this timestamp (exclusive.)
 direction 	string 	    Optional        The chronological order of response based on the submission time. asc or desc. Defaults to desc.
 nested 	    boolean 	Optional        If true, the result will roll up multi-leg orders under the legs field of primary order.
-side 	    string 	    Optional        Filters down to orders that have a matching side field set. See the Order model’s side field for the values you can specify here
+side 	    string 	    Optional        Filters down to orders that have a matching side field set. See the Order model’s side field for the values you can specify here :: Valid values: buy, sell
 symbols 	string 	    Optional        A comma-separated list of symbols to filter by (ex. “AAPL,TSLA,MSFT”). A currency pair is required for crypto orders (ex. “BTCUSD,BCHUSD,LTCUSD,ETCUSD”).
 
 #  examples
@@ -101,7 +101,46 @@ end
 
 """
 
+function get_orders_by_order_id(order_id::Any)::DataFrame
+
+GET /v2/orders/{order_id}
+Retrieves a single order for the given order_id
+
+Query Parameters
+Attribute 	Type 	          Requirement 	  Description
+order_id 	string<uuid>      Optional        Order ID
+
+#  examples
+orders_by_id_df = get_orders_by_order_id(order_id)
+orders_by_id_df = get_orders_by_order_id(nothing)
+
+
+"""
+function get_orders_by_order_id(order_id::Any)::DataFrame
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "orders"], "/")
+
+    # order_id is optional
+    # pull all orders or per the order id
+    if 1 == isnothing(order_id)
+        # end point url for orders at the live or paper account
+        url = join([TRADING_API_URL, "orders"], "/")
+    elseif 1 != isnothing(order_id)
+        url = join([url, order_id], "/")
+    end
+
+    res = HTTP.get(url, headers = HEADERS[])
+    resdict = JSON.parse(String(res.body))
+    resdf = DataFrame(resdict)
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    return resdf
+end
+
+
+"""
+
 Place an order
+POST /v2/orders
 
 function place_order(symbol::String; qty::Any=nothing, notional::Any=nothing, side::Any=nothing, type::Any=nothing, time_in_force::Any=nothing, limit_price::Any=nothing, stop_price::Any=nothing,
     trail_price::Any=nothing, trail_percent::Any=nothing, extended_hours::Any=nothing, client_order_id::Any=nothing, order_class::Any=nothing, take_profit::Any=nothing, stop_loss::Any=nothing)
