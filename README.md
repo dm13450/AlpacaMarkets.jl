@@ -46,9 +46,16 @@ Plus I've added helper functions to obtain data between two periods:
 
 So you can pull some historical data as and when needed.
 
+Trading API functions are available up to account, orders and positions:
+
+* `account`, `get_orders`, `place_order`, `replace_an_order`
+* `cancel_order`, `cancel_all_orders`, `get_orders_by_order_id`
+* `get_orders_by_client_order_id`, `get_open_positions`, 
+* `get_position`, `close_all_positions`, `close_position`
+
 ## To Do
 
-* Integrate Trading API
+* Integrate Trading API - remainder of the trading functions not mentioned above.
 
 ## Examples
 

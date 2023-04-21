@@ -163,7 +163,6 @@ function replace_an_order(order_id::String; qty::Any=nothing, time_in_force::Any
     return resdf
 end
 
-export replace_an_order
 
 """
 
@@ -182,7 +181,8 @@ orders_by_id_df = get_orders_by_order_id(nothing)
 
 
 """
-function get_orders_by_order_id(order_id::Any)::DataFrame
+function get_orders_by_order_id(order_id::String)::DataFrame
+
     # end point url for orders at the live or paper account
     url = join([TRADING_API_URL, "orders"], "/")
 
@@ -200,6 +200,87 @@ function get_orders_by_order_id(order_id::Any)::DataFrame
     resdf = DataFrame(resdict)
     print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
     return resdf
+end
+
+
+"""
+
+function get_orders_by_client_order_id(client_order_id::String)::DataFrame
+
+
+GET /v2/orders:by_client_order_id
+Retrieves a single order for the given client_order_id.
+
+Query Parameters
+Attribute 	        Type        Requirement     Description
+client_order_id 	string      Optional        Client Order ID
+
+#  examples
+client_order_id = "breakout_1"
+orders_by_id_df = get_orders_by_client_order_id(client_order_id)
+
+"""
+function get_orders_by_client_order_id(client_order_id::String)::DataFrame
+
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "orders:by_client_order_id"], "/")
+    url = join([url, "?client_order_id=", client_order_id])
+
+    res = HTTP.get(url, headers = HEADERS[])
+    resdict = JSON.parse(String(res.body))
+    resdf = DataFrame(resdict)
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    return resdf
+end
+
+
+"""
+
+Cancel all orders
+
+function cancel_all_orders()::DataFrame
+
+DELETE /v2/orders
+Attempts to cancel all open orders. A response will be provided for each order that is attempted to be cancelled. If an order is no longer cancelable, the server will respond with status 500 and reject the request.
+
+#  examples
+cancel_all_orders()
+
+"""
+function cancel_all_orders()::DataFrame
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "orders"], "/")
+   
+    res = HTTP.delete(url, headers = HEADERS[])
+    resdict = JSON.parse(String(res.body))
+    resdf = DataFrame(resdict)
+    return resdf
+end
+
+
+"""
+
+Cancel an order
+
+function cancel_order(order_id::String)::DataFrame
+
+DELETE /v2/orders/{order_id}
+Attempts to cancel an open order. If the order is no longer cancelable (example: status="filled"), the server will respond with status 422, and reject the request. Upon acceptance of the cancel request, it returns status 204.
+
+Path Parameters
+Attribute	Type	        Requirement	    Description
+order_id	string<uuid>	Optional        Order ID
+
+#  examples
+order_id_value = "b46662d6-46b9-446b-a9a2-45aff3dd0418"
+cancel_order(order_id_value)
+
+"""
+function cancel_order(order_id::String)
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "orders"], "/")
+    url = join([url, order_id], "/")
+    HTTP.delete(url, headers = HEADERS[])
 end
 
 
@@ -338,3 +419,123 @@ return post_response_df
 end
 
 #export place_order
+
+
+"""
+
+Get open positions
+
+function get_open_positions()::DataFrame
+
+GET /v2/positions
+Retrieves a list of the account’s open positions.
+
+"""
+function get_open_positions()::DataFrame
+
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "positions"], "/")
+
+    res = HTTP.get(url, headers = HEADERS[])
+    resdict = JSON.parse(String(res.body))
+    resdf = DataFrame(resdict)
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    return resdf
+end
+
+
+"""
+
+Get an open position
+
+function get_position(symbol::String)::DataFrame
+
+GET /v2/positions/{symbol}
+Retrieves the account’s open position for the given symbol
+
+"""
+function get_position(symbol::String)::DataFrame
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "positions"], "/")
+    url = join([url, symbol], "/")
+
+    res = HTTP.get(url, headers = HEADERS[])
+    resdict = JSON.parse(String(res.body))
+    resdf = DataFrame(resdict)
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    return resdf
+end
+
+
+"""
+
+Close all positions
+
+function close_all_positions(cancel_orders::Bool)::DataFrame
+
+DELETE /v2/positions
+Closes (liquidates) all of the account’s open long and short positions. A response will be provided for each order that is attempted to be cancelled. 
+If an order is no longer cancelable, the server will respond with status 500 and reject the request.
+
+"""
+function close_all_positions(cancel_orders::Bool)::DataFrame
+
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "positions"], "/")
+    url = join([url, "?cancel_orders=", cancel_orders])
+
+    res = HTTP.delete(url, headers = HEADERS[])
+    resdict = JSON.parse(String(res.body))
+    resdf = DataFrame(resdict)
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    return resdf
+end
+
+
+"""
+
+Close a position
+
+function close_position(symbol::String; qty::Any=nothing, percentage::Any=nothing)::DataFrame
+
+DELETE /v2/positions/{symbol}
+Closes (liquidates) the account’s open position for the given symbol. Works for both long and short positions.
+
+Path Parameters
+Attribute	Type	    Requirement	    Description
+symbol	    string	        Optional    symbol or asset_id
+
+Query Parameters
+Attribute	    Type        Requirement	     Description
+qty	            decimal	    Optional         the number of shares to liquidate. Can accept up to 9 decimal points. Cannot work with percentage
+percentage	    decimal	    Optional         percentage of position to liquidate. Must be between 0 and 100. Would only sell fractional if position is originally fractional. Can accept up to 9 decimal points. Cannot work with qty
+
+
+"""
+function close_position(symbol::String; qty::Any=nothing, percentage::Any=nothing)::DataFrame
+
+    if !isnothing(qty) || !isnothing(percentage)
+        @assert isnothing(qty) && !isnothing(percentage) || !isnothing(qty) && isnothing(percentage) "Either qty or percentage permitted - can not state both"
+    end
+
+    # end point url for orders at the live or paper account
+    url = join([TRADING_API_URL, "positions"], "/")
+    
+    params = Dict(
+    "qty" => qty,
+    "percentage" => percentage
+    )
+
+    # join symbol to url 
+    url = join([url, symbol], "/")
+    # build attributes into the url seperated by ?
+    paramsurl = params_question_mark_sep(params)
+    url = join([url, paramsurl], "?")
+    # delete
+    res = HTTP.delete(url, headers = HEADERS[])
+    # parse to dataframr
+    resdict = JSON.parse(String(res.body))
+    resdf = DataFrame(resdict)
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    return resdf
+end
