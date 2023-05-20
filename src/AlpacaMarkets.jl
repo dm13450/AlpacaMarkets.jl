@@ -1,5 +1,6 @@
 module AlpacaMarkets
-  using HTTP, JSON
+  using HTTP
+  using JSON
   using DataFrames
   using Dates
 
@@ -9,6 +10,7 @@ module AlpacaMarkets
 
   const HEADERS = Ref{Vector{Pair{String, String}}}()
   const SLEEP_TIME = Ref{Float64}()
+  const TRADING_API_URL = ""
 
   function __init__()
     auth()
@@ -16,9 +18,38 @@ module AlpacaMarkets
     SLEEP_TIME[] = isnothing(SLEEP_TIME[]) ? 2.0 : SLEEP_TIME[]
   end
 
-  function auth(api_key, api_secret)
-    HEADERS[] = ["APCA-API-KEY-ID" => api_key,
-                 "APCA-API-SECRET-KEY" => api_secret]
+
+  """
+
+  function select_account(select_account::String)
+
+  select_account 
+  available arguments: 'PAPER' or 'LIVE'
+
+  Sets the trading url to paper or live end points
+
+  TRADING_API_URL = "https://paper-api.alpaca.markets/v2"
+  TRADING_API_URL = "https://api.alpaca.markets/v2"
+
+  User must define which account to trade on paper or live. This will set the URL globally.
+
+"""
+  function select_account(select_account::String)
+    if select_account != "PAPER" || select_account != "LIVE"
+      @assert select_account == "PAPER" || select_account == "LIVE" "select_account available arguments :: 'PAPER' or 'LIVE'"
+    end
+
+    # set the URL for PAPER or LIVE trading
+    if select_account == "PAPER"
+      global TRADING_API_URL = "https://paper-api.alpaca.markets/v2"
+    elseif select_account == "LIVE"
+      global TRADING_API_URL = "https://api.alpaca.markets/v2"
+    end
+
+  end
+
+  function auth(api_key::String, api_secret::String)
+    HEADERS[] = ["APCA-API-KEY-ID" => api_key, "APCA-API-SECRET-KEY" => api_secret]
   end
 
   function auth()
@@ -41,6 +72,7 @@ module AlpacaMarkets
   end
 
   #auth(api_key, api_secret)
+  select_account("PAPER")
 
   include("utils.jl")
   include("stocks_trades_quotes.jl")
