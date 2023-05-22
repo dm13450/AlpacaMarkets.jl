@@ -88,7 +88,6 @@ function get_orders(symbols::Any; status::Any=nothing, limit::Any=nothing, after
     else
         paramsurl = params_question_mark_sep(params)
         url = join([url, paramsurl], "?")
-        print(url)
     end
 
     res = HTTP.get(url, headers = HEADERS[])
@@ -1356,7 +1355,7 @@ function close_all_positions(cancel_orders::Bool)::DataFrame
     res = HTTP.delete(url, headers = HEADERS[])
     resdict = JSON.parse(String(res.body))
     resdf = DataFrame(resdict)
-    #print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
+    print(DataFrame([[names(resdf)]; collect.(eachrow(resdf))], [:column; Symbol.(axes(resdf, 1))]))
     return resdf
 end
 

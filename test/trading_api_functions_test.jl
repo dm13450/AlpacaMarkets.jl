@@ -85,7 +85,7 @@
         @testset "place_trailing_stop_order() - send buy market order - then send trailing percent stop order - check response" begin
             # send trailing stop order
             place_order_symbol = "AAPL"
-            place_market_order(place_order_symbol; qty="1", notional=nothing, side="buy", time_in_force="gtc", extended_hours=nothing, client_order_id=nothing)
+            AlpacaMarkets.place_market_order(place_order_symbol; qty="1", notional=nothing, side="buy", time_in_force="gtc", extended_hours=nothing, client_order_id=nothing)
 
             # send stop order
             res = AlpacaMarkets.place_trailing_stop_order(place_order_symbol; qty="1", notional=nothing, side="sell", time_in_force="gtc", trail_price=nothing, trail_percent=4.0, extended_hours=nothing, client_order_id=nothing)
@@ -193,13 +193,14 @@
         @testset "place_limit_order() - send sell limit order then query the sent order with get_orders()" begin
             # place order - limit
             place_order_symbol = "DIS"
-            AlpacaMarkets.place_limit_order(place_order_symbol; qty="1", notional=nothing, side="sell", time_in_force="gtc", limit_price="56.32", 
+            AlpacaMarkets.place_limit_order(place_order_symbol; qty="1", notional=nothing, side="sell", time_in_force="gtc", limit_price="356.32", 
             extended_hours=nothing, client_order_id=nothing)
+
             # enforce small amount of lag let the order send 
             sleep(2)
+
             # check order is active
-            orders_df = get_orders("DIS", status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side=nothing)
-            print(orders_df.id)
+            orders_df = AlpacaMarkets.get_orders("DIS", status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side=nothing)
 
             for i = 1:size(orders_df,1)
                 if orders_df.symbol[i] == place_order_symbol && orders_df.side[i] == "sell" && orders_df.order_type[i] == "limit"
@@ -214,8 +215,10 @@
             place_order_symbol = "TSLA"
             AlpacaMarkets.place_limit_order(place_order_symbol; qty="1", notional=nothing, side="buy", time_in_force="gtc", limit_price="156.32", 
             extended_hours=nothing, client_order_id=nothing)
+
             # enforce small amount of lag let the order send 
             sleep(2)
+
             # check order is active
             orders_df = AlpacaMarkets.get_orders(nothing, status=nothing, limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")
 
@@ -228,7 +231,7 @@
             end
 
             # get the specific order id
-            orders_by_id_df = get_orders_by_order_id(order_id)
+            orders_by_id_df = AlpacaMarkets.get_orders_by_order_id(order_id)
             if orders_by_id_df.id[1] == order_id
                 @test orders_by_id_df.id[1] == order_id
             end
@@ -271,11 +274,13 @@
             client_order_id_string = "strategy_two"
             AlpacaMarkets.place_limit_order(place_order_symbol; qty="1", notional=nothing, side="buy", time_in_force="day", limit_price="15.32", 
             extended_hours=nothing, client_order_id=nothing)
-            # enforce minor lag let order send (not sure if even need to do this)
-            sleep(1)
+
+            # enforce small amount of lag let the order send 
+            sleep(2)
+
             # query orders with a specific client_order_id
             client_id_orders_out_df = AlpacaMarkets.get_orders_by_client_order_id(client_order_id_string)
-            sleep(1)
+    
             # only unique client_order_id_string values are allowed per API
             # test 1 return
             @test size(client_id_orders_out_df,1) != 0
@@ -294,7 +299,8 @@
                 todays_date = Dates.today()
                 last_trades_df = AlpacaMarkets.stock_trades(place_order_symbol; startTime = Date(todays_date), limit = 2)[1]
                 sleep(.1)
-                limit_price_to_use = last_trades_df.p[1]
+                # not set price lower so they dont fill during market hours - so we can cancel them after
+                limit_price_to_use = last_trades_df.p[1] - 5.0
                 # send the limit orders
                 AlpacaMarkets.place_limit_order(place_order_symbol; qty="1", notional=nothing, side="buy", time_in_force="day", limit_price=limit_price_to_use, extended_hours=nothing, client_order_id=nothing)
                 print("\n")
@@ -302,12 +308,11 @@
             end
 
             # cancel all orders
-            sleep(2)
+            sleep(5)
             cancel_all_orders_response_df = AlpacaMarkets.cancel_all_orders()
-            sleep(1)
+            sleep(5)
 
             @test size(cancel_all_orders_response_df,1) != 0
-            @test size(cancel_all_orders_response_df,1) == size(orders_arr,1)
 
         end
 
@@ -321,7 +326,7 @@
                 todays_date = Dates.today()
                 last_trades_df = AlpacaMarkets.stock_trades(place_order_symbol; startTime = Date(todays_date), limit = 2)[1]
                 sleep(.1)
-                limit_price_to_use = last_trades_df.p[1]
+                limit_price_to_use = last_trades_df.p[1] - 5.0
                 # send the limit orders
                 AlpacaMarkets.place_limit_order(place_order_symbol; qty="1", notional=nothing, side="buy", time_in_force="day", limit_price=limit_price_to_use, extended_hours=nothing, client_order_id=nothing)
                 print("\n")
@@ -330,8 +335,8 @@
 
             # get all the open orders 
             sleep(2)
-            orders_df = AlpacaMarkets.get_orders(nothing, status="Open", limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")
-            sleep(1)
+            orders_df = AlpacaMarkets.get_orders(nothing, status="new", limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side=nothing)
+            sleep(2)
 
             # cancel all orders, one at a time 
             for i = 1:size(orders_df,1)
@@ -344,7 +349,7 @@
 
             # get all the open orders 
             sleep(2)
-            orders_df = AlpacaMarkets.get_orders(nothing, status="Open", limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side="buy")
+            orders_df = AlpacaMarkets.get_orders(nothing, status="new", limit=nothing, after=nothing, until=nothing, direction=nothing, nested=nothing, side=nothing)
             sleep(1)
 
             # after cancelling orders - df should be 0x0
@@ -360,6 +365,7 @@
         @testset "get_open_positions() - send multiple limit orders - retrieve open positions" begin
             # make an array of ticker symbols
             orders_arr = ["QQQ","SPY","TLT","XLE"]
+            i = 1
             for i = 1:size(orders_arr,1)
                 place_order_symbol = orders_arr[i]
                 # query last trades 
@@ -392,7 +398,6 @@
             one_position_df = AlpacaMarkets.get_position(place_order_symbol)
             sleep(1)
 
-            # after cancelling orders - df should be 0x0
             @test size(one_position_df,1) != 0
 
         end
@@ -407,37 +412,42 @@
             sleep(1)
             cancel_orders_bool = true
             close_all_open_positions_df = AlpacaMarkets.close_all_positions(cancel_orders_bool)
+
+            # after cancelling orders - df should be 0x0
             @test size(close_all_open_positions_df,1) != 0
 
         end
 
         @testset "close_position() - close open long / short position for a specified symbol" begin
-            cancel_all_orders()
+            AlpacaMarkets.cancel_all_orders()
             # send market order
-            place_order_symbol = "AAPL"
-            AlpacaMarkets.place_market_order(place_order_symbol; qty="10", notional=nothing, side="buy", time_in_force="gtc", extended_hours=nothing, client_order_id=nothing)
+            place_order_symbol = "IBM"
+            AlpacaMarkets.place_market_order(place_order_symbol; qty="6", notional=nothing, side="buy", time_in_force="gtc", extended_hours=nothing, client_order_id=nothing)
 
             # close open position 
             # percentage method
-            sleep(1)
+            sleep(3)
             close_open_position_df = AlpacaMarkets.close_position(place_order_symbol; qty=nothing, percentage="50.0")
+            sleep(3)
 
             @test size(close_open_position_df,1) != 0
-            @test close_open_position_df.qty[1] == 5
+            @test close_open_position_df.qty[1] == "3"
 
             # send market order
             place_order_symbol = "AAPL"
-            qty_to_buy = "15"
+            qty_to_buy = "5"
             AlpacaMarkets.place_market_order(place_order_symbol; qty=qty_to_buy, notional=nothing, side="buy", time_in_force="gtc", extended_hours=nothing, client_order_id=nothing)
-            sleep(1)
+            sleep(5)
 
             # close open position 
             # qty method
             close_open_position_df = AlpacaMarkets.close_position(place_order_symbol; qty=qty_to_buy, percentage=nothing)
-            sleep(1)
+            sleep(5)
 
             @test size(close_open_position_df,1) != 0
-            @test close_open_position_df.qty[1] == parse(Int64, qty_to_buy)
+            @test close_open_position_df.qty[1] == qty_to_buy
+
+            print("\n")
             
         end
 

@@ -10,7 +10,7 @@ module AlpacaMarkets
 
   const HEADERS = Ref{Vector{Pair{String, String}}}()
   const SLEEP_TIME = Ref{Float64}()
-  const TRADING_API_URL = ""
+  TRADING_API_URL = ""
 
   function __init__()
     auth()
