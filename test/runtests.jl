@@ -11,5 +11,6 @@ using Dates
   include("crypto_trades_quotes_test.jl")
   include("crypto_bars_test.jl")
   include("stock_bars_test.jl")
-  include("trading_api_functions_test.jl")
+  include("orders_test.jl")
+  include("account_test.jl")
 end

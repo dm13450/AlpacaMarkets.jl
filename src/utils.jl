@@ -83,3 +83,28 @@ end
 function validate_ccy(symbol::Array{String})
   validate_ccy.(symbol)
 end
+
+function validate_tif(tif::String)
+  @assert tif in ["day", "gtc", "opg", "cls", "ioc", "fok"]
+  true
+end
+
+function validate_side(side::String)
+  @assert side == "buy" || side == "sell" "side available arguments :: buy or sell"
+  true
+end
+
+function validate_size(qty, notional)
+  @assert sum(isnan.([qty, notional])) == 1
+  true
+end
+
+
+function validate_order(side::String, tif::String, qty, notional)
+  validate_side(side)
+  validate_tif(tif)
+  validate_size(qty, notional)
+  true
+end
+
+

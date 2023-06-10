@@ -16,33 +16,17 @@ module AlpacaMarkets
     auth()
     SLEEP_TIME[] = tryparse(Float64, get(ENV, "ALPACA_SLEEP", "2.0")) # 0.301
     SLEEP_TIME[] = isnothing(SLEEP_TIME[]) ? 2.0 : SLEEP_TIME[]
+    set_trading_env("PAPER")
   end
 
 
-  """
-
-  function select_account(select_account::String)
-
-  select_account 
-  available arguments: 'PAPER' or 'LIVE'
-
-  Sets the trading url to paper or live end points
-
-  TRADING_API_URL = "https://paper-api.alpaca.markets/v2"
-  TRADING_API_URL = "https://api.alpaca.markets/v2"
-
-  User must define which account to trade on paper or live. This will set the URL globally.
-
-"""
-  function select_account(select_account::String)
-    if select_account != "PAPER" || select_account != "LIVE"
-      @assert select_account == "PAPER" || select_account == "LIVE" "select_account available arguments :: 'PAPER' or 'LIVE'"
-    end
+  function set_trading_env(trading_env::String)
+    @assert trading_env == "PAPER" || trading_env == "LIVE" "select_account available arguments :: 'PAPER' or 'LIVE'"
 
     # set the URL for PAPER or LIVE trading
-    if select_account == "PAPER"
+    if trading_env == "PAPER"
       global TRADING_API_URL = "https://paper-api.alpaca.markets/v2"
-    elseif select_account == "LIVE"
+    elseif trading_env == "LIVE"
       global TRADING_API_URL = "https://api.alpaca.markets/v2"
     end
 
@@ -71,8 +55,6 @@ module AlpacaMarkets
 
   end
 
-  #auth(api_key, api_secret)
-  select_account("PAPER")
 
   include("utils.jl")
   include("stocks_trades_quotes.jl")
@@ -83,6 +65,8 @@ module AlpacaMarkets
   include("stock_exchanges.jl")
   include("news.jl")
   include("stock_bars.jl")
-  include("trading_api_functions.jl")
+  include("orders.jl")
+  include("account.jl")
+  include("positions.jl")
 
 end # module

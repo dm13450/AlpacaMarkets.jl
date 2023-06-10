@@ -26,4 +26,22 @@
 
     @test AlpacaMarkets.validate_ccy("BTCUSD") == "BTC/USD"
   end
+
+  @testset "Validate Orders" begin
+    
+    @test AlpacaMarkets.validate_tif("ioc")
+    #@test !AlpacaMarkets.validate_tif("IOC")
+
+    @test AlpacaMarkets.validate_side("buy")
+    #@test !AlpacaMarkets.validate_side("bUy")
+
+    @test AlpacaMarkets.validate_size(10, NaN)
+    @test AlpacaMarkets.validate_size(NaN, 10)
+    #@test !AlpacaMarkets.validate_size(10, 10)
+    #@test !AlpacaMarkets.validate_size(NaN, NaN)
+     
+  end
+
+
+
 end
