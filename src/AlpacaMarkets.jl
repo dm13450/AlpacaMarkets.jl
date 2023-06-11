@@ -68,5 +68,6 @@ module AlpacaMarkets
   include("orders.jl")
   include("account.jl")
   include("positions.jl")
+  include("announcements.jl")
 
 end # module
