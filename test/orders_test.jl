@@ -11,8 +11,11 @@
 
     @test params["notional"] == 100
     #@test !(["qty", "client_order_id"] in keys(params))
-    
 
+    params = create_order_params(symbol="AAPL", side = "buy", qty = 1, time_in_force = "ioc", type = "market", order_class = "bracket")
+
+    @test params["order_class"] == "bracket"
+  
   end 
 
 end

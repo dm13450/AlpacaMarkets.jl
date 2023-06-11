@@ -15,7 +15,7 @@ Once you've obtained the key and secret you can authenticate manually with
 
 ```julia
 using AlpacaMarkets
-AlpacaMarkets.select_account("PAPER")
+AlpacaMarkets.trading_env("PAPER")
 AlpacaMarkets.auth(KEY, SECRET)
 ```
 
@@ -49,13 +49,12 @@ So you can pull some historical data as and when needed.
 
 Trading API functions are available up to account, orders and positions:
 
-* `account`, `get_orders`, `place_order`, `place_market_order`
-* `place_limit_order`, `place_stop_order`, `place_stop_limit_order`,
-* `place_trailing_stop_order`, `place_bracket_order`,
-* `place_oco_order`, `place_oto_order`, `replace_an_order`, 
-* `cancel_order`, `cancel_all_orders`, `get_orders_by_order_id`
-* `get_orders_by_client_order_id`, `get_open_positions`, 
-* `get_position`, `close_all_positions`, `close_position`
+* `account`, `create_market_order`, `create_limit_order`, `create_stop_order`
+* `create_stop_limit_order`, `create_trailing_stop_order`, `create_bracket_order`,
+* `get_orders`, `get_orders_by_order_id`, `get_orders_by_client_order_id`,
+* `cancel_all_orders`, `cancel_order`, `replace_an_order`, 
+* `close_all_positions`, `close_position`, `get_all_positions`
+* `get_position`
 
 ## To Do
 

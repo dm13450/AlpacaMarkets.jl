@@ -1,12 +1,23 @@
-function create_order_params(;symbol, side, qty=NaN, notional=NaN, time_in_force, type, extended_hours=false, client_order_id="none")
-  
-  validate_order(side, time_in_force, qty, notional)
+function create_order_params(;symbol, side, qty=NaN, notional=NaN, time_in_force, type, extended_hours=false, client_order_id="none", order_class=nothing)
 
-  params = Dict("symbol" => symbol,
-  "side" => side,
-  "time_in_force" => time_in_force,
-  "type" => type,
-  "extended_hours" => extended_hours)
+  validate_order(side, time_in_force, qty, notional, order_class, type)
+
+  if isnothing(order_class)
+    params = Dict("symbol" => symbol,
+    "side" => side,
+    "time_in_force" => time_in_force,
+    "type" => type,
+    "extended_hours" => extended_hours)
+  elseif !isnothing(order_class)
+    params = Dict("symbol" => symbol,
+    "side" => side,
+    "time_in_force" => time_in_force,
+    "type" => type,
+    "extended_hours" => extended_hours,
+    "order_class" => order_class,
+    "take_profit" => Dict("limit_price" => tp_limit_price),
+    "stop_loss" => Dict("stop_price" => sl_stop_price, "limit_price" =>  sl_limit_price))
+  end
 
   if client_order_id != "none"
     params["client_order_id"] = client_order_id
@@ -31,36 +42,35 @@ end
 
 function create_market_order(;symbol, side, qty=NaN, notional=NaN, time_in_force, extended_hours=false, client_order_id="none")
   params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = "market", 
-                             extended_hours=extended_hours, client_order_id=client_order_id)
+                             extended_hours=extended_hours, client_order_id=client_order_id, order_class=nothing)
   submit_order(params)
 end 
 
 function create_limit_order(;symbol, side, qty=NaN, notional=NaN, limit_price, time_in_force, extended_hours=false, client_order_id="none")
   params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = "limit", 
-                             extended_hours=extended_hours, client_order_id=client_order_id)
+                             extended_hours=extended_hours, client_order_id=client_order_id, order_class=nothing)
   params["limit_price"] = limit_price
   submit_order(params)
 end
 
 function create_stop_order(;symbol, side, qty=NaN, notional=NaN, stop_price, time_in_force, extended_hours=false, client_order_id="none")
   params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = "stop", 
-                             extended_hours=extended_hours, client_order_id=client_order_id)
+                             extended_hours=extended_hours, client_order_id=client_order_id, order_class=nothing)
   params["stop_price"] = stop_price 
   submit_order(params)
 end
 
 function create_stop_limit_order(;symbol, side, qty=NaN, notional=NaN, limit_price, stop_price, time_in_force, extended_hours=false, client_order_id="none")
   params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = "stop_limit", 
-                             extended_hours=extended_hours, client_order_id=client_order_id)
+                             extended_hours=extended_hours, client_order_id=client_order_id, order_class=nothing)
   params["stop_price"] = stop_price 
   params["limit_price"] = limit_price
   submit_order(params)
 end
 
 function create_trailing_stop_order(;symbol, side, qty=NaN, notional=NaN, trail_price=NaN, trail_percent=NaN, time_in_force, extended_hours=false, client_order_id="none")
-
   params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = "stop_limit", 
-                             extended_hours=extended_hours, client_order_id=client_order_id)
+                             extended_hours=extended_hours, client_order_id=client_order_id, order_class=nothing)
   validate_size(trail_price, trail_percent)
   if !isnan(trail_price)
     params["trail_price"] = trail_price
@@ -73,8 +83,21 @@ function create_trailing_stop_order(;symbol, side, qty=NaN, notional=NaN, trail_
   submit_order(params)
 end
 
-function create_bracket_order()
-  #nyi
+function create_bracket_order(;symbol, side, type, qty=NaN, notional=NaN, limit_price=NaN, stop_price=NaN, tp_limit_price, sl_stop_price, sl_limit_price, time_in_force, extended_hours=false, client_order_id="none")
+  params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = type, extended_hours=extended_hours, client_order_id=client_order_id, order_class="bracket")
+
+  if !isnan(limit_price)
+    params["limit_price"] = limit_price
+  end
+
+  if !isnan(stop_price)
+    params["stop_price"] = stop_price
+  end
+
+  params["take_profit"]["limit_price"] = tp_limit_price 
+  params["stop_loss"]["stop_price"] = sl_stop_price 
+  params["stop_loss"]["limit_price"] = sl_limit_price 
+  submit_order(params)
 end
 
 function create_oco_order()
@@ -141,7 +164,7 @@ function cancel_all_orders()::DataFrame
   return resdf
 end
 
-function cancel_order(order_id::String)
+function cancel_order(order_id::String)::DataFrame
   url = join([TRADING_API_URL, "orders", order_id], "/")
   res = HTTP.delete(url, headers = HEADERS[])
   resdict = JSON.parse(String(res.body))
@@ -150,7 +173,7 @@ function cancel_order(order_id::String)
 end
 
 
-function replace_an_order(;order_id::String, params::Dict) 
+function replace_an_order(;order_id::String, params::Dict)::DataFrame
 
   url = join([TRADING_API_URL, "orders", order_id], "/")
 
