@@ -15,4 +15,4 @@ end
 get_stock_quotes(symbol, startTime, endTime, feed=nothing) = get_stock_data(stock_quotes, symbol, startTime, endTime, feed=feed)
 get_stock_trades(symbol, startTime, endTime, feed=nothing) = get_stock_data(stock_trades, symbol, startTime, endTime, feed=feed)
 
-export get_stock_quotes, get_stock_trades
+#export get_stock_quotes, get_stock_trades
