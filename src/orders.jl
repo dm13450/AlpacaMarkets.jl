@@ -1,4 +1,4 @@
-function create_order_params(;symbol, side, qty=NaN, notional=NaN, time_in_force, type, extended_hours=false, client_order_id="none", order_class=nothing)
+function create_order_params(;symbol, side, qty=NaN, notional=NaN, time_in_force, type, extended_hours=false, client_order_id="none", tp_limit_price=nothing, sl_stop_price=nothing, sl_limit_price=nothing,order_class=nothing)
 
   validate_order(side, time_in_force, qty, notional, order_class, type)
 
@@ -84,7 +84,8 @@ function create_trailing_stop_order(;symbol, side, qty=NaN, notional=NaN, trail_
 end
 
 function create_bracket_order(;symbol, side, type, qty=NaN, notional=NaN, limit_price=NaN, stop_price=NaN, tp_limit_price, sl_stop_price, sl_limit_price, time_in_force, extended_hours=false, client_order_id="none")
-  params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = type, extended_hours=extended_hours, client_order_id=client_order_id, order_class="bracket")
+  params = create_order_params(symbol=symbol, side=side, qty=qty, notional=notional, time_in_force = time_in_force, type = type, extended_hours=extended_hours, tp_limit_price=tp_limit_price, sl_stop_price=sl_stop_price, 
+  sl_limit_price=sl_limit_price, client_order_id=client_order_id, order_class="bracket")
 
   if !isnan(limit_price)
     params["limit_price"] = limit_price

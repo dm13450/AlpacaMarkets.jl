@@ -27,16 +27,7 @@ function close_position(symbol::String; qty=NaN, percentage=NaN)::DataFrame
   return resdf
 end
 
-function get_position(symbol::String)::DataFrame
-  url = join([TRADING_API_URL, "positions", symbol], "/")
-
-  res = HTTP.get(url, headers = HEADERS[])
-  resdict = JSON.parse(String(res.body))
-  resdf = DataFrame(resdict)
-  return resdf
-end
-
-function get_all_positions()::DataFrame
+function get_positions()::DataFrame
   url = join([TRADING_API_URL, "positions"], "/")
 
   res = HTTP.get(url, headers = HEADERS[])
