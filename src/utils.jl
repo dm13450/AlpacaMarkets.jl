@@ -95,16 +95,29 @@ function validate_side(side::String)
 end
 
 function validate_size(qty, notional)
-  @assert sum(isnan.([qty, notional])) == 1
+  @assert sum(isnan.([qty, notional])) == 1 "Either qty or notational - can not state both"
   true
 end
 
+function validate_type(type::String)
+  @assert type in ["market", "limit", "stop", "stop_limit", "trailing_stop"] "valid types :: market, limit, stop, stop_limit, or trailing_stop"
+  true
+end
 
-function validate_order(side::String, tif::String, qty, notional)
+function validate_class(order_class::Any)
+  if isnothing(order_class)
+    order_class = "simple"
+  end
+  @assert order_class in ["simple", "bracket", "oco ", "oto"] "valid order class :: simple, bracket, oco, oto"
+  true
+end
+
+function validate_order(side::String, tif::String, qty, notional, order_class, type::String)
   validate_side(side)
   validate_tif(tif)
   validate_size(qty, notional)
+  validate_type(type)
+  validate_class(order_class)
   true
 end
-
 
