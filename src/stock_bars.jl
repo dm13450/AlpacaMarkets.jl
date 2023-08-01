@@ -39,4 +39,4 @@ function stock_bars(symbol::AbstractString, timeframe::AbstractString;
   resdict = JSON.parse(String(res.body))
   parse_response(resdict, "bars")
 end
-export stock_bars
+#export stock_bars
