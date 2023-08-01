@@ -1,7 +1,7 @@
 """
   stock_bars
 
-Get historical aggregated price data for a cryptocurrency.
+Get historical aggregated price data for a stock.
 
 `timeframe::AbstractString`: 1Min-59min, 1Hour-23Hour, 1Day-31Day
 
@@ -40,3 +40,35 @@ function stock_bars(symbol::AbstractString, timeframe::AbstractString;
   parse_response(resdict, "bars")
 end
 #export stock_bars
+
+
+"""
+  stock_bars_latest
+
+Get the latest minute-aggregated price data for a stock.
+
+# Examples
+```julia-repl
+julia> stock_bars_latest("AAPL")
+```
+
+"""
+function stock_bars_latest(symbol::AbstractString;
+                    feed = nothing, currency = nothing)
+
+  url = join([BASE_STOCK_URL, "bars", "latest"], "/")
+
+  params = Dict(
+    "symbols" => symbol,
+    "feed" => feed,
+    "currency" => currency
+  )
+
+  paramsurl = params_uri(params)
+
+  url = url * "?" * paramsurl
+  res = HTTP.get(url, headers = HEADERS[])
+  resdict = JSON.parse(String(res.body))
+  parse_latest_response(resdict, "bars")
+end
+#export stock_bars_latest

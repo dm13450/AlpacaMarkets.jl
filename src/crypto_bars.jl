@@ -11,7 +11,7 @@ julia> crypto_bars("BTC/USD", "5min")
 ```
 
 """
-function crypto_bars(symbo::String, timeframe::AbstractString; exchanges=nothing, startTime=nothing, limit=nothing, page_token=nothing)
+function crypto_bars(symbol::String, timeframe::AbstractString; exchanges=nothing, startTime=nothing, limit=nothing, page_token=nothing)
   validate_ccy(symbol)
   url = join([BASE_CRYPTO_URL, "bars"], "/")
 

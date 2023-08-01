@@ -32,7 +32,7 @@ This is automatically be picked up by AlpacaMarkets.jl each time you start Julia
 
 All the historical market data API functions are available:
 
-* `stock_bars`, `stock_quotes` and `stock_trades`
+* `stock_bars`, `stock_bars_latest`, `stock_quotes` and `stock_trades`
 * `stock_quotes_latest` and `stock_trades_latest`
 * `crypto_bars`, `crypto_quotes` and `crypto_trades`
 
@@ -52,9 +52,9 @@ Trading API functions are available up to account, orders and positions:
 * `account`, `get_orders`, `place_order`, `place_market_order`
 * `place_limit_order`, `place_stop_order`, `place_stop_limit_order`,
 * `place_trailing_stop_order`, `place_bracket_order`,
-* `place_oco_order`, `place_oto_order`, `replace_an_order`, 
+* `place_oco_order`, `place_oto_order`, `replace_an_order`,
 * `cancel_order`, `cancel_all_orders`, `get_orders_by_order_id`
-* `get_orders_by_client_order_id`, `get_open_positions`, 
+* `get_orders_by_client_order_id`, `get_open_positions`,
 * `get_position`, `close_all_positions`, `close_position`
 
 ## To Do
