@@ -9,6 +9,6 @@
 
   res = AlpacaMarkets.stock_bars_latest("AAPL")
 
-  @test length(res) == 1
-  @test isa(res[1], DataFrame)
+  @test nrow(res) == 1
+  @test isa(res, DataFrame)
 end
