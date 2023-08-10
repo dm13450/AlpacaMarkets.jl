@@ -28,8 +28,8 @@ function crypto_trades(symbol; exchanges=nothing, startTime=nothing, endTime=not
 end
 #export crypto_trades
 
-function crypto_quotes(symbol; exchanges=nothing, startTime=nothing, endTime=nothing, limit=nothing, page_token=nothing)
+#function crypto_quotes(symbol; exchanges=nothing, startTime=nothing, endTime=nothing, limit=nothing, page_token=nothing)
 
-  get_crypto_data("quotes", symbol; exchanges=exchanges, startTime=startTime, endTime=endTime, limit=limit, page_token=page_token)
-end
+#  get_crypto_data("quotes", symbol; exchanges=exchanges, startTime=startTime, endTime=endTime, limit=limit, page_token=page_token)
+#end
 #export crypto_quotes

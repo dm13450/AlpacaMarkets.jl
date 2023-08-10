@@ -5,7 +5,7 @@ module AlpacaMarkets
   using Dates
 
   const BASE_STOCK_URL = "https://data.alpaca.markets/v2/stocks"
-  const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta2/crypto"
+  const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta3/crypto/us"
   const NEWS_URL = "https://data.alpaca.markets//v1beta1/news"
 
   const HEADERS = Ref{Vector{Pair{String, String}}}()
