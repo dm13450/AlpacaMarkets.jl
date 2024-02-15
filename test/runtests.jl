@@ -13,4 +13,6 @@ using Dates
   include("stock_bars_test.jl")
   include("orders_test.jl")
   include("account_test.jl")
+  include("assets_test.jl")
+  include("screener_test.jl")
 end
