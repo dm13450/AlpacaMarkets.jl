@@ -1,7 +1,7 @@
 name = "AlpacaMarkets"
 uuid = "02dc6022-739e-4478-acf8-ef45d2bc67b8"
 authors = ["dm13450 <dean.markwick@talk21.com>"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
