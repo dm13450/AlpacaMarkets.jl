@@ -143,7 +143,7 @@ end
 
 function cancel_order(order_id::String)
   url = join([TRADING_API_URL, "orders", order_id], "/")
-  HTTP.delete(url, headers = HEADERS[])s
+  HTTP.delete(url, headers = HEADERS[])
   return nothing
 end
 
