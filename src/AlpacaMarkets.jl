@@ -6,8 +6,9 @@ module AlpacaMarkets
 
   const BASE_STOCK_URL = "https://data.alpaca.markets/v2/stocks"
   const BASE_CRYPTO_URL = "https://data.alpaca.markets/v1beta3/crypto/us"
-  const NEWS_URL = "https://data.alpaca.markets//v1beta1/news"
-
+  const NEWS_URL = "https://data.alpaca.markets/v1beta1/news"
+  const DATA_URL = "https://data.alpaca.markets/v1beta1"
+  
   const HEADERS = Ref{Vector{Pair{String, String}}}()
   const SLEEP_TIME = Ref{Float64}()
   TRADING_API_URL = ""
@@ -69,5 +70,7 @@ module AlpacaMarkets
   include("account.jl")
   include("positions.jl")
   include("announcements.jl")
+  include("assets.jl")
+  include("screener.jl")
 
 end # module
