@@ -144,9 +144,7 @@ end
 function cancel_order(order_id::String)
   url = join([TRADING_API_URL, "orders", order_id], "/")
   res = HTTP.delete(url, headers = HEADERS[])
-  resdict = JSON.parse(String(res.body))
-  resdf = DataFrame(resdict)
-  return resdf
+  return DataFrame(status = res.status, id=order_id)
 end
 
 
